@@ -11,7 +11,7 @@ function Hero() {
         </h1>
       </div>
       <div className="lg:flex-1 relative w-full h-[50vh] justify-center">
-        <Image src="/anime.png" alt="anime" fill className="object-contain" />
+        <Image src="/anime.png" alt="anime" fill sizes="auto" className="object-contain" />
       </div>
     </header>
   );

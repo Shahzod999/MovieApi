@@ -1,9 +1,8 @@
 "use client";
-import { useSelector, useDispatch } from "react-redux";
-import { searchAction } from "../lib/SearchSlice";
-import { RootState } from "../lib/store";
+import { useDispatch } from "react-redux";
+import { getMovies, searchAction } from "../lib/SearchSlice";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-
+import { useEffect } from "react";
 
 const Try = () => {
   const dispatch = useDispatch();
