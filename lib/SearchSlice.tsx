@@ -11,10 +11,10 @@ export interface Movie {
   Poster: string;
 }
 
-export const getMovies = createAsyncThunk("search/getMovies", async (_, { getState }) => {
+export const getMovies = createAsyncThunk("search/getMovies", async ({ page }: { page: number }, { getState }) => {
   const state = getState() as RootState;
   const category = state.search.value;
-  const page = state.search.page;
+
   let url = `https://www.omdbapi.com/?apikey=fd2c751&s=${category}&page=${page}`;
   try {
     const response = await axios.get(url);
@@ -30,7 +30,6 @@ export interface CounterState {
   movies: Movie[];
   isLoading: boolean;
   hasError: boolean;
-  page: number;
 }
 
 const initialState: CounterState = {
@@ -38,7 +37,6 @@ const initialState: CounterState = {
   movies: [],
   isLoading: false,
   hasError: false,
-  page: 1,
 };
 
 export const searchSlice = createSlice({
@@ -48,10 +46,6 @@ export const searchSlice = createSlice({
     searchAction: (state, action: PayloadAction<string>) => {
       state.value = action.payload;
       state.movies = [];
-      state.page = 1;
-    },
-    incrementPage: (state) => {
-      state.page += 1;
     },
   },
   extraReducers: (builder) => {
@@ -61,7 +55,11 @@ export const searchSlice = createSlice({
         state.hasError = false;
       })
       .addCase(getMovies.fulfilled, (state, action: PayloadAction<Movie[]>) => {
-        state.movies = [...state.movies, ...action.payload];
+        if (Array.isArray(action.payload)) {
+          state.movies = [...state.movies, ...action.payload];
+        } else {
+          console.log("objects finish brother))", action.payload);
+        }
         state.isLoading = false;
         state.hasError = false;
       })
@@ -74,5 +72,5 @@ export const searchSlice = createSlice({
 
 export const selectedValue = (state: RootState) => state.search.value;
 export const selectedMovie = (state: RootState) => state.search.movies;
-export const { searchAction, incrementPage } = searchSlice.actions;
+export const { searchAction } = searchSlice.actions;
 export default searchSlice.reducer;

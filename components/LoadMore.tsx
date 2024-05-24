@@ -4,16 +4,18 @@ import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/lib/store";
-import { getMovies, incrementPage } from "@/lib/SearchSlice";
+import { getMovies } from "@/lib/SearchSlice";
 
+let page = 1;
 function LoadMore() {
   const dispatch = useDispatch<AppDispatch>();
   const { ref, inView } = useInView();
 
   useEffect(() => {
     if (inView) {
-      dispatch(incrementPage());
-      dispatch(getMovies());
+      dispatch(getMovies({ page })).then(() => {
+        page++;
+      });
     }
   }, [inView, dispatch]);
 

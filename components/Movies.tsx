@@ -1,17 +1,11 @@
 "use client";
-import { getMovies } from "@/lib/SearchSlice";
-import { AppDispatch, RootState } from "@/lib/store";
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import React from "react";
+import { useSelector } from "react-redux";
 import AnimeCard from "./AnimeCard";
 
 const Movies = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const movies = useSelector((state: RootState) => state.search.movies);
-
-  useEffect(() => {
-    dispatch(getMovies());
-  }, [dispatch]);
 
   return (
     <>

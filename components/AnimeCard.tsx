@@ -13,13 +13,14 @@ const variants = {
 };
 
 function AnimeCard({ movie, index }: Prop) {
+  const daley = Number(index.toString()[index.toString().length - 1]) / 10;
   return (
     <MotionDiv
       variants={variants}
       initial="hidden"
       animate="visible"
       transition={{
-        delay: index * 0.25,
+        delay: daley,
         ease: "easeInOut",
         duration: 0.5,
       }}
