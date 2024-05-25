@@ -2,22 +2,26 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/lib/store";
-import { getMovies } from "@/lib/SearchSlice";
+import { getMovies, pageCounter, selectedError } from "@/lib/SearchSlice";
 
-let page = 1;
 function LoadMore() {
+  const error = useSelector(selectedError);
   const dispatch = useDispatch<AppDispatch>();
   const { ref, inView } = useInView();
 
   useEffect(() => {
     if (inView) {
-      dispatch(getMovies({ page })).then(() => {
-        page++;
+      dispatch(getMovies()).then(() => {
+        dispatch(pageCounter());
       });
     }
   }, [inView, dispatch]);
+
+  if (error) {
+    return <div>Sorry but there is no such film</div>;
+  }
 
   return (
     <>
