@@ -10,7 +10,7 @@ function LoadMore() {
   const error = useSelector(selectedError);
   const dispatch = useDispatch<AppDispatch>();
   const { ref, inView } = useInView();
-
+  
   useEffect(() => {
     if (inView) {
       dispatch(getMovies()).then(() => {
@@ -18,6 +18,7 @@ function LoadMore() {
       });
     }
   }, [inView, dispatch]);
+  
 
   if (error) {
     return <div>Sorry but there is no such film</div>;

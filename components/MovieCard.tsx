@@ -3,7 +3,7 @@ import { MotionDiv } from "./MotionDiv";
 import Link from "next/link";
 import { Movie } from "@/types/allMovieTypes";
 
-interface AnimeCardProps {
+interface MovieCardProps {
   movie: Movie;
   index: number;
 }
@@ -13,7 +13,7 @@ const variants = {
   visible: { opacity: 1 },
 };
 
-function AnimeCard({ movie, index }: AnimeCardProps) {
+function MovieCard({ movie, index }: MovieCardProps) {
   const daley = Number(index.toString()[index.toString().length - 1]) / 10;
   const yearsAsNumber = Number(movie.Year);
   const movieRating = !isNaN(yearsAsNumber) ? yearsAsNumber / 2 : "Highest Rating";
@@ -56,4 +56,4 @@ function AnimeCard({ movie, index }: AnimeCardProps) {
   );
 }
 
-export default AnimeCard;
+export default MovieCard;

@@ -1,7 +1,6 @@
 "use client";
-import React from "react";
 import { useSelector } from "react-redux";
-import AnimeCard from "./AnimeCard";
+import MovieCard from "./MovieCard";
 import { selectedError, selectedMovie } from "@/lib/SearchSlice";
 
 const Movies = () => {
@@ -11,10 +10,11 @@ const Movies = () => {
   if (error) {
     return <div>...404 not found</div>;
   }
+
   return (
     <>
       {movies?.map((movie, index) => (
-        <AnimeCard key={movie.imdbID} movie={movie} index={index} />
+        <MovieCard key={movie.imdbID} movie={movie} index={index} />
       ))}
     </>
   );

@@ -13,7 +13,7 @@ const Try = () => {
   const searchToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputSearch = event.target.value;
 
-    if (inputSearch.length > 3) {
+    if (inputSearch.length > 1) {
       if (typingTimeOut) {
         clearTimeout(typingTimeOut);
       }

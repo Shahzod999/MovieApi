@@ -8,8 +8,8 @@ import { StoreProvider } from "./StoreProvider";
 const dmSans = DM_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Anime Vault",
-  description: "Your favorite anime, all in one place.",
+  title: "Best Movie",
+  description: "Your favorite movies, all in one place.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
