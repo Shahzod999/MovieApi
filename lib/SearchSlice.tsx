@@ -8,13 +8,14 @@ export const getMovies = createAsyncThunk("search/getMovies", async (_, { getSta
   const state = getState() as RootState;
   const category = state.search.value;
   const page = state.search.page;
-  console.log(page);
 
   let url = `https://www.omdbapi.com/?apikey=fd2c751&s=${category}&page=${page}`;
   try {
     const response = await axios.get(url);
+    console.log(response.data);
+
     if (response.data.Error) {
-      throw "error";
+      throw new Error(response.data.Error);
     }
     return response.data.Search as Movie[];
   } catch (err) {
@@ -45,6 +46,7 @@ export const searchSlice = createSlice({
       state.value = action.payload;
       console.log(state.value);
       state.movies = [];
+
       state.hasError = false;
       state.page = 1;
     },
@@ -57,9 +59,11 @@ export const searchSlice = createSlice({
       .addCase(getMovies.fulfilled, (state, action: PayloadAction<Movie[]>) => {
         state.movies = [...state.movies, ...action.payload];
         state.hasError = false;
+        console.log(state.movies);
       })
       .addCase(getMovies.rejected, (state) => {
         state.hasError = true;
+        console.log(state.movies, "reject");
       });
   },
 });

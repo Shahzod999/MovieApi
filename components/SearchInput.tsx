@@ -13,18 +13,18 @@ const Try = () => {
   const searchToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputSearch = event.target.value;
 
-    if (inputSearch.length > 1) {
-      if (typingTimeOut) {
-        clearTimeout(typingTimeOut);
-      }
-      setTypingTimeOut(
-        setTimeout(() => {
+    if (typingTimeOut) {
+      clearTimeout(typingTimeOut);
+    }
+
+    setTypingTimeOut(
+      setTimeout(() => {
+        if (inputSearch.trim().length > 2) {
           dispatch(searchAction(inputSearch));
           router.push("/");
-          event.target.value = "";
-        }, 1000)
-      );
-    }
+        }
+      }, 1000)
+    );
   };
 
   return (
