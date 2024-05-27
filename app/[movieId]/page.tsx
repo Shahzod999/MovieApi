@@ -12,7 +12,20 @@ interface CurrentMovieProps {
 }
 
 async function CurrentMovie({ params }: CurrentMovieProps) {
-  const currentMovie = await fetchMovieId({ id: params.movieId });
+  let currentMovie;
+
+  try {
+    currentMovie = await fetchMovieId({ id: params.movieId });
+  } catch (error) {
+    return (
+      <main className="sm:p-16 py-16 px-8 flex flex-col gap-10">
+        <h1 className="text-3xl text-white font-bold">404 - Movie Not Found</h1>
+        <Link href="/" className="text-gray-500 underline">
+          Go back to Home
+        </Link>
+      </main>
+    );
+  }
 
   return (
     <main className="sm:p-16 py-16 px-8 flex flex-col gap-10">

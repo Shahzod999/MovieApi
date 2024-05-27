@@ -12,7 +12,6 @@ export const getMovies = createAsyncThunk("search/getMovies", async (_, { getSta
   let url = `https://www.omdbapi.com/?apikey=fd2c751&s=${category}&page=${page}`;
   try {
     const response = await axios.get(url);
-    console.log(response.data);
 
     if (response.data.Error) {
       throw new Error(response.data.Error);
