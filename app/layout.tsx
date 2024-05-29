@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
           </div>
 
-          <aside className="h-full p-[15px]">
+          <aside className="p-[15px]">
             <CommentsSection />
           </aside>
         </StoreProvider>
