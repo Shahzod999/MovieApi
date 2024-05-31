@@ -8,7 +8,7 @@ import { TbLogout } from "react-icons/tb";
 import Authentication from "./Authentication";
 import { useClickOutSide } from "@/hooks/useClickOutside";
 import { useSelector, useDispatch } from "react-redux";
-import { logout, selectedUserValid } from "@/lib/authSlice";
+import { logout, selectedUser } from "@/lib/authSlice";
 
 interface Comment {
   name: string;
@@ -19,7 +19,9 @@ interface Comment {
 
 const CommentsSection = () => {
   const dispatch = useDispatch();
-  const userValid = localStorage.getItem("userValid");
+  const user = useSelector(selectedUser);
+  console.log(user,'dada');
+  
   const [hidden, setHidden] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
   useClickOutSide(menuRef, () => {
@@ -104,19 +106,20 @@ const CommentsSection = () => {
     event.currentTarget.reset();
   };
 
-  console.log(userValid);
-
   return (
     <>
       <div className="fixed bg-stone-900 rounded-lg p-[20px] flex flex-col gap-5">
         <div className="p-[10px] border-b-[1px] border-gray-500 flex justify-between items-center">
           <span>Comments</span>
 
-          {userValid ? (
-            <div className="flex gap-2 items-center cursor-pointer hover:text-cyan-500" onClick={() => dispatch(logout())}>
-              <strong>LogOut</strong>
-              <TbLogout size="30px" />
-            </div>
+          {user ? (
+            <>
+              <strong>{user.email}</strong>
+              <div className="flex gap-2 items-center cursor-pointer hover:text-rose-500" onClick={() => dispatch(logout())}>
+                <strong>LogOut</strong>
+                <TbLogout size="30px" />
+              </div>
+            </>
           ) : (
             <div className="flex gap-2 items-center cursor-pointer hover:text-cyan-500" onClick={() => setHidden(!hidden)}>
               <strong>LogIn</strong>

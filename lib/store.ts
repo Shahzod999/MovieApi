@@ -7,7 +7,7 @@ export const store = configureStore({
   reducer: {
     search: searchReducer,
     movieId: getMovieIdReducer,
-    authUserState: authReducer,
+    auth: authReducer,
   },
 });
 

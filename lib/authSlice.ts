@@ -1,7 +1,39 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  user: JSON.parse(localStorage.getItem("user")) || null,
+export interface User {
+  uid: string;
+  email: string;
+  emailVerified: boolean;
+  isAnonymous: boolean;
+  providerData: ProviderDaum[];
+  stsTokenManager: StsTokenManager;
+  createdAt: string;
+  lastLoginAt: string;
+  apiKey: string;
+  appName: string;
+}
+
+export interface ProviderDaum {
+  providerId: string;
+  uid: string;
+  displayName: any;
+  email: string;
+  phoneNumber: any;
+  photoURL: any;
+}
+
+export interface StsTokenManager {
+  refreshToken: string;
+  accessToken: string;
+  expirationTime: number;
+}
+
+interface AuthState {
+  user: User | null;
+}
+
+const initialState: AuthState = {
+  user: JSON.parse(localStorage.getItem("user") as string) || null,
 };
 export const authSlice = createSlice({
   name: "auth",
@@ -19,6 +51,5 @@ export const authSlice = createSlice({
 });
 
 export const { login, logout } = authSlice.actions;
-export const selectedUser = (state: any) => state.authUserState.user;
-export const selectedUserValid = (state: any) => state.authUserState.userValid;
+export const selectedUser = (state: { auth: AuthState }) => state.auth.user;
 export default authSlice.reducer;

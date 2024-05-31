@@ -3,10 +3,14 @@ import { useState } from "react";
 import { BsCloudDownload } from "react-icons/bs";
 import { auth } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { useSelector, useDispatch } from "react-redux";
-import { login, selectedUser } from "@/lib/authSlice";
+import { useDispatch } from "react-redux";
+import { login } from "@/lib/authSlice";
 
-const Authentication = ({ setHidden }) => {
+interface AuthProps {
+  setHidden: (value: boolean) => void;
+}
+
+const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
   const dispatch = useDispatch();
   const [error, setError] = useState(false);
   const [email, setEmail] = useState("");
@@ -15,6 +19,7 @@ const Authentication = ({ setHidden }) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const registerOrLogin = register ? createUserWithEmailAndPassword : signInWithEmailAndPassword;
 
     registerOrLogin(auth, email, password)
@@ -28,9 +33,6 @@ const Authentication = ({ setHidden }) => {
         console.log(error);
       });
   };
-
-  const user = useSelector(selectedUser);
-  console.log(user, "userrr");
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 items-center">
@@ -57,7 +59,7 @@ const Authentication = ({ setHidden }) => {
       <button type="submit" className="h-12 w-72 rounded-xl bg-cyan-500 text-white font-semibold hover:bg-neon-blue-light active:bg-neon-blue-dark transition duration-300 shadow-neon-blue-bg-glow">
         {register ? "Register" : "Sign In"}
       </button>
-      {error && <span className="text-rose-800">Wrong Email or Password</span>}
+      {error && <span className="text-rose-500">Wrong Email or Password</span>}
       <span className="text-white">or</span>
       <button type="button" className="h-12 w-72 rounded-xl bg-neon-blue text-white font-semibold hover:bg-neon-blue-light active:bg-neon-blue-dark transition duration-300 shadow-neon-blue-glow" onClick={() => setRegister(!register)}>
         {register ? "Are u reddy to login?" : "Do u wanna register?"}
