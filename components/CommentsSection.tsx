@@ -1,11 +1,32 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Pic from "../public/noPic.jpg";
 import Image from "next/image";
 import { SlLike } from "react-icons/sl";
+import { HiOutlineUserCircle } from "react-icons/hi";
+import { TbLogout } from "react-icons/tb";
+import Authentication from "./Authentication";
+import { useClickOutSide } from "@/hooks/useClickOutside";
+import { useSelector, useDispatch } from "react-redux";
+import { logout, selectedUserValid } from "@/lib/authSlice";
+
+interface Comment {
+  name: string;
+  time: string;
+  comments: string;
+  likes: number;
+}
 
 const CommentsSection = () => {
-  const data = [
+  const dispatch = useDispatch();
+  const userValid = localStorage.getItem("userValid");
+  const [hidden, setHidden] = useState<boolean>(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useClickOutSide(menuRef, () => {
+    setHidden(false);
+  }); //для закрытия окна при нажатии на вне элемента
+
+  const data: Comment[] = [
     {
       name: "Shahzod",
       time: "17:15",
@@ -55,9 +76,9 @@ const CommentsSection = () => {
       likes: 13,
     },
   ];
-  const [comments, setComments] = useState(() => {
+  const [comments, setComments] = useState<Comment[]>(() => {
     const savedData = localStorage.getItem("comments");
-    return savedData ? JSON.parse(savedData) : data;
+    return savedData ? (JSON.parse(savedData) as Comment[]) : data;
   });
 
   useEffect(() => {
@@ -71,7 +92,7 @@ const CommentsSection = () => {
     const date = new Date();
     const time = `${date.getDate()}day${date.getHours()}:${date.getMinutes()}`;
 
-    setComments((prev) => [
+    setComments((prev: Comment[]) => [
       ...prev,
       {
         name: "Default",
@@ -83,44 +104,66 @@ const CommentsSection = () => {
     event.currentTarget.reset();
   };
 
-  return (
-    <div className="fixed bg-stone-900 rounded-lg p-[20px] flex flex-col gap-5">
-      <div className="p-[10px] border-b-[1px] border-gray-500">
-        <span>Comments</span>
-      </div>
-      <div className="flex flex-col gap-5">
-        <div className="flex items-center gap-2">
-          <Image src={Pic} alt="" className="w-[30px] h-[30px] object-cover rounded-full" />
-          <div className="w-full">
-            <form onSubmit={commentHandler}>
-              <input name="commentInput" type="text" placeholder="Add comment..." className="p-[8px] rounded-lg w-full h-full" required />
-            </form>
-          </div>
-        </div>
-        <div className="overflow-y-scroll h-[60vh] noscroll">
-          {comments.map((comment, index) => (
-            <div className="flex gap-2 mb-10" key={index}>
-              <Image src={Pic} alt="" className="w-[30px] h-[30px] object-cover rounded-full" />
-              <div className="flex flex-col gap-5">
-                <div className="flex gap-2 items-center">
-                  <span>{comment.name}</span>
-                  <span>{comment.time}</span>
-                </div>
-                <p>{comment.comments}</p>
+  console.log(userValid);
 
-                <div className="flex justify-between items-center">
-                  <div className="flex  gap-2 items-center">
-                    <SlLike />
-                    <strong>{comment.likes}</strong>
+  return (
+    <>
+      <div className="fixed bg-stone-900 rounded-lg p-[20px] flex flex-col gap-5">
+        <div className="p-[10px] border-b-[1px] border-gray-500 flex justify-between items-center">
+          <span>Comments</span>
+
+          {userValid ? (
+            <div className="flex gap-2 items-center cursor-pointer hover:text-cyan-500" onClick={() => dispatch(logout())}>
+              <strong>LogOut</strong>
+              <TbLogout size="30px" />
+            </div>
+          ) : (
+            <div className="flex gap-2 items-center cursor-pointer hover:text-cyan-500" onClick={() => setHidden(!hidden)}>
+              <strong>LogIn</strong>
+              <HiOutlineUserCircle size="30px" />
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col gap-5">
+          <div className="flex items-center gap-2">
+            <Image src={Pic} alt="" className="w-[30px] h-[30px] object-cover rounded-full" />
+            <div className="w-full">
+              <form onSubmit={commentHandler}>
+                <input name="commentInput" type="text" placeholder="Add comment..." className="p-[8px] rounded-lg w-full h-full" required />
+              </form>
+            </div>
+          </div>
+          <div className="overflow-y-scroll h-[60vh] noscroll">
+            {comments.map((comment, index) => (
+              <div className="flex gap-2 mb-10" key={index}>
+                <Image src={Pic} alt="" className="w-[30px] h-[30px] object-cover rounded-full" />
+                <div className="flex flex-col gap-5">
+                  <div className="flex gap-2 items-center">
+                    <span>{comment.name}</span>
+                    <span>{comment.time}</span>
                   </div>
-                  <span>Reply</span>
+                  <p>{comment.comments}</p>
+
+                  <div className="flex justify-between items-center">
+                    <div className="flex  gap-2 items-center">
+                      <SlLike />
+                      <strong>{comment.likes}</strong>
+                    </div>
+                    <span>Reply</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+
+      <div className={`fixed ${hidden ? "grid" : "hidden"} top-0 left-0 right-0 bottom-0 backdrop-blur bg-gradient-to-r from-purple-900/10 via-black/10 to-purple-900/10 z-10  place-items-center`}>
+        <div className="rounded-xl border border-neutral-800 p-10 bg-black/60 shadow-lg backdrop-blur-md" ref={menuRef}>
+          <Authentication setHidden={setHidden} />
+        </div>
+      </div>
+    </>
   );
 };
 

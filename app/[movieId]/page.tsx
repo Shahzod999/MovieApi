@@ -1,9 +1,9 @@
 import MovieCard from "@/components/MovieCard";
 import LoadMore from "@/components/LoadMore";
-import SliderMovie from "@/components/SliderMovie";
 import { fetchMovieId } from "@/lib/currentMovie";
 import Link from "next/link";
 import React from "react";
+import Movies from "@/components/Movies";
 
 interface CurrentMovieProps {
   params: {
@@ -63,7 +63,7 @@ async function CurrentMovie({ params }: CurrentMovieProps) {
           })}
         </div>
       </section>
-      <SliderMovie />
+      <Movies />
       <LoadMore />
     </main>
   );

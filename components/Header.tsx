@@ -1,5 +1,7 @@
+"use client";
 import SearchInput from "./SearchInput";
 import Link from "next/link";
+
 function Header() {
   return (
     <header className="bg-header bg-center bg-cover bg-no-repeat sm:p-16 py-16 px-8 flex justify-center lg:items-center max-lg:flex-col w-full sm:gap-16 gap-0">

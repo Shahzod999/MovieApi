@@ -45,7 +45,6 @@ export const searchSlice = createSlice({
       state.value = action.payload;
       console.log(state.value);
       state.movies = [];
-
       state.hasError = false;
       state.page = 1;
     },
