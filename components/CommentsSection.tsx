@@ -9,6 +9,8 @@ import Authentication from "./Authentication";
 import { useClickOutSide } from "@/hooks/useClickOutside";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, selectedUser } from "@/lib/authSlice";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface Comment {
   name: string;
@@ -20,8 +22,7 @@ interface Comment {
 const CommentsSection = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectedUser);
-  console.log(user,'dada');
-  
+
   const [hidden, setHidden] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
   useClickOutSide(menuRef, () => {
@@ -78,6 +79,7 @@ const CommentsSection = () => {
       likes: 13,
     },
   ];
+
   const [comments, setComments] = useState<Comment[]>(() => {
     const savedData = localStorage.getItem("comments");
     return savedData ? (JSON.parse(savedData) as Comment[]) : data;
@@ -87,7 +89,7 @@ const CommentsSection = () => {
     localStorage.setItem("comments", JSON.stringify(comments));
   }, [comments]);
 
-  const commentHandler = (event: React.FormEvent<HTMLFormElement>) => {
+  const commentHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const input = formData.get("commentInput") as string;
@@ -104,6 +106,13 @@ const CommentsSection = () => {
       },
     ]);
     event.currentTarget.reset();
+
+    const dataComments = doc(db, "comment", user?.uid);
+    await setDoc(dataComments, {
+      name: "Shahzod",
+      numb: "1",
+      first: "test3",
+    });
   };
 
   return (
@@ -130,11 +139,15 @@ const CommentsSection = () => {
         <div className="flex flex-col gap-5">
           <div className="flex items-center gap-2">
             <Image src={Pic} alt="" className="w-[30px] h-[30px] object-cover rounded-full" />
-            <div className="w-full">
-              <form onSubmit={commentHandler}>
-                <input name="commentInput" type="text" placeholder="Add comment..." className="p-[8px] rounded-lg w-full h-full" required />
-              </form>
-            </div>
+            {user ? (
+              <div className="w-full">
+                <form onSubmit={commentHandler}>
+                  <input name="commentInput" type="text" placeholder="Add comment..." className="p-[8px] rounded-lg w-full h-full" required />
+                </form>
+              </div>
+            ) : (
+              <p>Please log in to leave a comment.</p>
+            )}
           </div>
           <div className="overflow-y-scroll h-[60vh] noscroll">
             {comments.map((comment, index) => (
