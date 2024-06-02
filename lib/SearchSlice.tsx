@@ -43,7 +43,6 @@ export const searchSlice = createSlice({
   reducers: {
     searchAction: (state, action: PayloadAction<string>) => {
       state.value = action.payload;
-      console.log(state.value);
       state.movies = [];
       state.hasError = false;
       state.page = 1;
@@ -57,7 +56,6 @@ export const searchSlice = createSlice({
       .addCase(getMovies.fulfilled, (state, action: PayloadAction<Movie[]>) => {
         state.movies = [...state.movies, ...action.payload];
         state.hasError = false;
-        console.log(state.movies);
       })
       .addCase(getMovies.rejected, (state) => {
         state.hasError = true;

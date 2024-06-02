@@ -9,14 +9,16 @@ import Authentication from "./Authentication";
 import { useClickOutSide } from "@/hooks/useClickOutside";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, selectedUser } from "@/lib/authSlice";
-import { doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, getDocs, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { Timestamp } from "firebase/firestore";
 
 interface Comment {
-  name: string;
-  time: string;
-  comments: string;
+  id: string;
+  timeStamp: Timestamp; // Change type to Timestamp
+  comment: string;
   likes: number;
+  name: string;
 }
 
 const CommentsSection = () => {
@@ -29,96 +31,47 @@ const CommentsSection = () => {
     setHidden(false);
   }); //для закрытия окна при нажатии на вне элемента
 
-  const data: Comment[] = [
-    {
-      name: "Shahzod",
-      time: "17:15",
-      comments: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, asperiores.",
-      likes: 63,
-    },
-    {
-      name: "Mirkodir",
-      time: "10:45",
-      comments: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, asperiores.",
-      likes: 23,
-    },
-    {
-      name: "Farhod",
-      time: "07:15",
-      comments: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, asperiores.",
-      likes: 33,
-    },
-    {
-      name: "Farohiddin",
-      time: "12:07",
-      comments: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, asperiores.",
-      likes: 13,
-    },
-    {
-      name: "Farohiddin",
-      time: "12:07",
-      comments: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, asperiores.",
-      likes: 13,
-    },
-    {
-      name: "Farohiddin",
-      time: "12:07",
-      comments: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, asperiores.",
-      likes: 13,
-    },
-    {
-      name: "Farohiddin",
-      time: "12:07",
-      comments: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, asperiores.",
-      likes: 13,
-    },
-    {
-      name: "Farohiddin",
-      time: "12:07",
-      comments: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, asperiores.",
-      likes: 13,
-    },
-  ];
-
-  const [comments, setComments] = useState<Comment[]>(() => {
-    const savedData = localStorage.getItem("comments");
-    return savedData ? (JSON.parse(savedData) as Comment[]) : data;
-  });
+  const [comments, setComments] = useState<Comment[]>([]);
 
   useEffect(() => {
-    localStorage.setItem("comments", JSON.stringify(comments));
-  }, [comments]);
+    const fetchComments = async () => {
+      const commentsCollection = collection(db, "comments");
+      const commentsSnapshot = await getDocs(commentsCollection);
+      const commentsList = commentsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Comment[];
+      setComments(commentsList);
+    };
+    fetchComments();
+  }, [user]);
 
   const commentHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const input = formData.get("commentInput") as string;
-    const date = new Date();
-    const time = `${date.getDate()}day${date.getHours()}:${date.getMinutes()}`;
 
-    setComments((prev: Comment[]) => [
-      ...prev,
-      {
-        name: "Default",
-        time,
-        comments: input,
-        likes: 0,
-      },
-    ]);
+    const newComment: Omit<Comment, "id"> = {
+      comment: input,
+      timeStamp: serverTimestamp() as unknown as Timestamp,
+      likes: 0,
+      name: user?.email || "Anonymous",
+    };
     event.currentTarget.reset();
 
-    const dataComments = doc(db, "comment", user?.uid);
-    await setDoc(dataComments, {
-      name: "Shahzod",
-      numb: "1",
-      first: "test3",
-    });
+    try {
+      const commentsCollection = collection(db, "comments");
+      const docRef = await addDoc(commentsCollection, {
+        ...newComment,
+        timeStamp: serverTimestamp(),
+      });
+      setComments((prev) => [...prev, { ...newComment, id: docRef.id }]);
+    } catch (error) {
+      console.log("Error adding comment: ", error);
+    }
   };
 
   return (
     <>
       <div className="fixed bg-stone-900 rounded-lg p-[20px] flex flex-col gap-5">
-        <div className="p-[10px] border-b-[1px] border-gray-500 flex justify-between items-center">
+        <div className="p-[10px] border-b-[1px] border-gray-500 flex flex-wrap justify-between items-center gap-7">
           <span>Comments</span>
 
           {user ? (
@@ -150,25 +103,27 @@ const CommentsSection = () => {
             )}
           </div>
           <div className="overflow-y-scroll h-[60vh] noscroll">
-            {comments.map((comment, index) => (
-              <div className="flex gap-2 mb-10" key={index}>
-                <Image src={Pic} alt="" className="w-[30px] h-[30px] object-cover rounded-full" />
-                <div className="flex flex-col gap-5">
-                  <div className="flex gap-2 items-center">
-                    <span>{comment.name}</span>
-                    <span>{comment.time}</span>
-                  </div>
-                  <p>{comment.comments}</p>
-
-                  <div className="flex justify-between items-center">
-                    <div className="flex  gap-2 items-center">
-                      <SlLike />
-                      <strong>{comment.likes}</strong>
+            {comments.map((comment) => (
+              <>
+                <div className="flex gap-2 mb-10" key={comment.id}>
+                  <Image src={Pic} alt="" className="w-[30px] h-[30px] object-cover rounded-full" />
+                  <div className="flex flex-col gap-5">
+                    <div className="flex gap-2 items-center">
+                      <span>{comment.name}</span>
+                      <span>{comment.timeStamp.toDate().toLocaleString()}</span>
                     </div>
-                    <span>Reply</span>
+                    <p>{comment.comment}</p>
+
+                    <div className="flex justify-between items-center">
+                      <div className="flex  gap-2 items-center">
+                        <SlLike />
+                        <strong>{comment.likes}</strong>
+                      </div>
+                      <span>Reply</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </>
             ))}
           </div>
         </div>
