@@ -1,10 +1,14 @@
 "use client";
 import { useState } from "react";
 import { BsCloudDownload } from "react-icons/bs";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage } from "@/lib/firebase";
+
 import { useDispatch } from "react-redux";
 import { login } from "@/lib/authSlice";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 
 interface AuthProps {
   setHidden: (value: boolean) => void;
@@ -16,13 +20,12 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [register, setRegister] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const registerOrLogin = register ? createUserWithEmailAndPassword : signInWithEmailAndPassword;
-
-    registerOrLogin(auth, email, password)
+    // const registerOrLogin = register ? createUserWithEmailAndPassword : signInWithEmailAndPassword;
+    signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
         dispatch(login(user));
@@ -34,12 +37,45 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
       });
   };
 
+  const userRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db, "users", res.user.uid), {
+        name: "name",
+        foto: "foto",
+        comments: {
+          comment: [],
+          timeStamp: serverTimestamp(),
+          likes: 0,
+          name: "Anonymous",
+        },
+      });
+      dispatch(login(res.user));
+      setHidden(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5 items-center">
-      <label htmlFor="image" className="flex gap-5 items-center p-10 border border-neutral-800 rounded-full cursor-pointer hover:opacity-80 hover:text-neon-blue-bg active:text-neon-blue-bg transition duration-300">
-        <BsCloudDownload className="text-4xl text-neon-blue-bg" />
-      </label>
-      <input type="file" id="image" className="hidden" />
+    <form onSubmit={register ? userRegister : handleSubmit} className="flex flex-col gap-5 items-center">
+      {register && (
+        <>
+          <label htmlFor="image" className="flex gap-5 items-center p-10 border border-neutral-800 rounded-full cursor-pointer hover:opacity-80 hover:text-neon-blue-bg active:text-neon-blue-bg transition duration-300">
+            <BsCloudDownload className="text-4xl text-neon-blue-bg" />
+          </label>
+          <input type="file" id="image" className="hidden" onChange={handleChange} />
+        </>
+      )}
+
       <input
         type="email"
         placeholder="Email"
