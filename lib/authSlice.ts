@@ -33,14 +33,17 @@ interface AuthState {
   user: User | null;
 }
 
-// Parse user data from localStorage, handling possible null value
-const getUserFromLocalStorage = (): User | null => {
-  const userData = localStorage.getItem("user");
-  return userData ? JSON.parse(userData) : null;
-};
-//...
+// const getUserFromLocalStorage = (): User | null => {
+//   const userData = localStorage.getItem("user");
+//   return userData ? JSON.parse(userData) : null;
+// };
+// //...
+// const initialState: AuthState = {
+//   user: getUserFromLocalStorage(), //...
+// };
+
 const initialState: AuthState = {
-  user: getUserFromLocalStorage(), //...
+  user: JSON.parse(localStorage.getItem("user") as string) || null,
 };
 export const authSlice = createSlice({
   name: "auth",
