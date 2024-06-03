@@ -21,7 +21,7 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
   const [data, setData] = useState<Record<string, string>>({});
   const [register, setRegister] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [percent, setPercent] = useState<number>();
+  const [percent, setPercent] = useState<number>(0);
 
   const fetchImageUrl = async () => {
     if (auth.currentUser) {
@@ -118,7 +118,7 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
           <label htmlFor="image" className="flex gap-5 justify-center items-center h-[100px] w-[100px] border border-neutral-800 rounded-full cursor-pointer hover:opacity-80 hover:text-neon-blue-bg active:text-neon-blue-bg transition duration-300">
             {data.img ? <Image src={data.img} alt="avatar" width={100} height={100} className="object-cover rounded-full" /> : <BsCloudDownload className="text-4xl text-neon-blue-bg" />}
           </label>
-          {percent && percent + "%"}
+          {percent > 0 && percent + "%"}
           <input type="file" id="image" className="hidden" onChange={(e) => e.target.files && setFile(e.target.files[0])} />
           <input type="text" id="name" placeholder="Name" className="h-12 w-72 rounded-xl px-8 border border-neon-blue bg-black text-white placeholder-neon-blue focus:outline-none focus:ring-2 focus:ring-neon-blue" required onChange={handleInput} />
         </>
