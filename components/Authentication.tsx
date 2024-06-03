@@ -8,7 +8,7 @@ import { storage } from "@/lib/firebase";
 
 import { useDispatch } from "react-redux";
 import { login } from "@/lib/authSlice";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import Image from "next/image";
 
 interface AuthProps {
@@ -21,14 +21,26 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
   const [data, setData] = useState({});
   const [register, setRegister] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [percent, setPercent] = useState<number>(0);
+  const [percent, setPercent] = useState<number>();
+
+  const fetchImageUrl = async () => {
+    if (auth.currentUser) {
+      const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+      const userData = userDoc.data();
+      if (userData && userData.foto) {
+        return userData.foto;
+      }
+    }
+    return ""; // Return an empty string if no foto is found
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, data.email, data.password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
-        dispatch(login(user));
+        const foto = await fetchImageUrl();
+        dispatch(login({ ...user, foto }));
         setHidden(false);
       })
       .catch((error) => {
@@ -80,6 +92,7 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
 
       await setDoc(doc(db, "users", res.user.uid), {
         name: data.name,
+        email: data.email,
         foto: data.img,
       });
       dispatch(login({ ...res.user, foto: data.img }));
@@ -104,6 +117,7 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
           <label htmlFor="image" className="flex gap-5 justify-center items-center h-[100px] w-[100px] border border-neutral-800 rounded-full cursor-pointer hover:opacity-80 hover:text-neon-blue-bg active:text-neon-blue-bg transition duration-300">
             {data.img ? <Image src={data.img} alt="avatar" width={100} height={100} className="object-cover rounded-full" /> : <BsCloudDownload className="text-4xl text-neon-blue-bg" />}
           </label>
+          {percent && percent + "%"}
           <input type="file" id="image" className="hidden" onChange={(e) => setFile(e.target.files[0])} />
           <input type="text" id="name" placeholder="Name" className="h-12 w-72 rounded-xl px-8 border border-neon-blue bg-black text-white placeholder-neon-blue focus:outline-none focus:ring-2 focus:ring-neon-blue" required onChange={handleInput} />
         </>

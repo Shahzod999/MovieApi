@@ -9,7 +9,7 @@ import Authentication from "./Authentication";
 import { useClickOutSide } from "@/hooks/useClickOutside";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, selectedUser } from "@/lib/authSlice";
-import { addDoc, arrayRemove, arrayUnion, collection, doc, getDocs, increment, serverTimestamp, updateDoc } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, doc, getDocs, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Timestamp } from "firebase/firestore";
 
@@ -26,14 +26,18 @@ interface Comment {
 const CommentsSection = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectedUser);
-
+  console.log(user,'all user');
+  
   const [hidden, setHidden] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
   useClickOutSide(menuRef, () => {
     setHidden(false);
   }); //для закрытия окна при нажатии на вне элемента
 
   const [comments, setComments] = useState<Comment[]>([]);
+  console.log(comments,'coments');
+  
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -104,7 +108,6 @@ const CommentsSection = () => {
       <div className="fixed bg-stone-900 rounded-lg p-[20px] flex flex-col gap-5">
         <div className="p-[10px] border-b-[1px] border-gray-500 flex justify-between items-center gap-7">
           <span>Comments</span>
-
           {user ? (
             <>
               <strong>{user.email}</strong>
@@ -122,7 +125,9 @@ const CommentsSection = () => {
         </div>
         <div className="flex flex-col gap-5">
           <div className="flex items-center gap-2">
+            
             {user?.foto ? <Image src={user.foto} alt="" width={100} height={100} className="w-[35px] h-[35px] object-cover rounded-full" /> : <Image src={Pic} alt="" className="w-[35px] h-[35px] object-cover rounded-full" />}
+            
             {user ? (
               <div className="w-full">
                 <form onSubmit={commentHandler}>
@@ -135,21 +140,20 @@ const CommentsSection = () => {
           </div>
           <div className="overflow-y-scroll h-[60vh] noscroll">
             {comments.map((comment) => (
-              <>
-                <div className="flex gap-2 mb-10" key={comment.id}>
-                  {comment.foto ? <Image src={comment.foto} alt="" width={100} height={100} className="w-[35px] h-[35px] object-cover rounded-full" /> : <Image src={Pic} alt="" className="w-[35px] h-[35px] object-cover rounded-full" />}
-                  <div className="flex flex-col gap-5">
-                    <div className="flex gap-2 items-center">
-                      <span>{comment.name}</span>
-                    </div>
-                    <p>{comment.comment}</p>
-                    <div className="flex gap-2 items-center" onClick={() => handleLike(comment.id)}>
-                      <SlLike />
-                      <strong>{comment.likes.length}</strong>
-                    </div>
+              <div className="flex gap-2 mb-10" key={comment.id}>
+                {comment.foto ? <Image src={comment.foto} alt="" width={100} height={100} className="w-[35px] h-[35px] object-cover rounded-full" /> : <Image src={Pic} alt="" className="w-[35px] h-[35px] object-cover rounded-full" />}
+                <div className="flex flex-col gap-5">
+                  <div className="flex gap-2 items-center">
+                    <span>{comment.name}</span>
+                  </div>
+                  <p>{comment.comment}</p>
+                  <div className="flex gap-2 items-center" onClick={() => handleLike(comment.id)}>
+                    <SlLike />
+                    <strong>{comment.likes.length}</strong>
+                    {/* <span>{comment.timeStamp.toDate().toLocaleString()}</span> */}
                   </div>
                 </div>
-              </>
+              </div>
             ))}
           </div>
         </div>
