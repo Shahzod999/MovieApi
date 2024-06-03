@@ -18,7 +18,7 @@ interface AuthProps {
 const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
   const dispatch = useDispatch();
   const [error, setError] = useState(false);
-  const [data, setData] = useState({});
+  const [data, setData] = useState<Record<string, string>>({});
   const [register, setRegister] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [percent, setPercent] = useState<number>();
@@ -52,6 +52,7 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
 
   useEffect(() => {
     const uploadFile = () => {
+      if (!file) return;
       const name = new Date().getTime() + file.name;
       const storageRef = ref(storage, name);
       const uploadTask = uploadBytesResumable(storageRef, file);
@@ -118,7 +119,7 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
             {data.img ? <Image src={data.img} alt="avatar" width={100} height={100} className="object-cover rounded-full" /> : <BsCloudDownload className="text-4xl text-neon-blue-bg" />}
           </label>
           {percent && percent + "%"}
-          <input type="file" id="image" className="hidden" onChange={(e) => setFile(e.target.files[0])} />
+          <input type="file" id="image" className="hidden" onChange={(e) => e.target.files && setFile(e.target.files[0])} />
           <input type="text" id="name" placeholder="Name" className="h-12 w-72 rounded-xl px-8 border border-neon-blue bg-black text-white placeholder-neon-blue focus:outline-none focus:ring-2 focus:ring-neon-blue" required onChange={handleInput} />
         </>
       )}
