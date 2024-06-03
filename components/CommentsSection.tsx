@@ -9,7 +9,7 @@ import Authentication from "./Authentication";
 import { useClickOutSide } from "@/hooks/useClickOutside";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, selectedUser } from "@/lib/authSlice";
-import { addDoc, collection, getDocs, serverTimestamp } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, doc, getDocs, increment, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Timestamp } from "firebase/firestore";
 
@@ -17,8 +17,10 @@ interface Comment {
   id: string;
   timeStamp: Timestamp; // Change type to Timestamp
   comment: string;
-  likes: number;
+  likes: string[];
+  foto: string;
   name: string;
+  uid: string;
 }
 
 const CommentsSection = () => {
@@ -51,7 +53,9 @@ const CommentsSection = () => {
     const newComment: Omit<Comment, "id"> = {
       comment: input,
       timeStamp: serverTimestamp() as unknown as Timestamp,
-      likes: 0,
+      likes: [],
+      foto: user?.foto || "",
+      uid: user?.uid || "Anonymous",
       name: user?.email || "Anonymous",
     };
     event.currentTarget.reset();
@@ -68,10 +72,37 @@ const CommentsSection = () => {
     }
   };
 
+  const handleLike = async (commentId: string) => {
+    if (!user) return;
+
+    try {
+      const commentDoc = doc(db, "comments", commentId);
+      const comment = comments.find((c) => c.id === commentId);
+
+      if (comment) {
+        if (comment.likes.includes(user.uid)) {
+          // User has already liked this comment, so remove their like
+          await updateDoc(commentDoc, {
+            likes: arrayRemove(user.uid),
+          });
+          setComments((prevComments) => prevComments.map((comment) => (comment.id === commentId ? { ...comment, likes: comment.likes.filter((uid) => uid !== user.uid) } : comment)));
+        } else {
+          // User has not liked this comment yet, so add their like
+          await updateDoc(commentDoc, {
+            likes: arrayUnion(user.uid),
+          });
+          setComments((prevComments) => prevComments.map((comment) => (comment.id === commentId ? { ...comment, likes: [...comment.likes, user.uid] } : comment)));
+        }
+      }
+    } catch (error) {
+      console.log("Error updating like count: ", error);
+    }
+  };
+
   return (
     <>
       <div className="fixed bg-stone-900 rounded-lg p-[20px] flex flex-col gap-5">
-        <div className="p-[10px] border-b-[1px] border-gray-500 flex flex-wrap justify-between items-center gap-7">
+        <div className="p-[10px] border-b-[1px] border-gray-500 flex justify-between items-center gap-7">
           <span>Comments</span>
 
           {user ? (
@@ -91,7 +122,7 @@ const CommentsSection = () => {
         </div>
         <div className="flex flex-col gap-5">
           <div className="flex items-center gap-2">
-            <Image src={Pic} alt="" className="w-[30px] h-[30px] object-cover rounded-full" />
+            {user?.foto ? <Image src={user.foto} alt="" width={100} height={100} className="w-[35px] h-[35px] object-cover rounded-full" /> : <Image src={Pic} alt="" className="w-[35px] h-[35px] object-cover rounded-full" />}
             {user ? (
               <div className="w-full">
                 <form onSubmit={commentHandler}>
@@ -106,20 +137,15 @@ const CommentsSection = () => {
             {comments.map((comment) => (
               <>
                 <div className="flex gap-2 mb-10" key={comment.id}>
-                  <Image src={Pic} alt="" className="w-[30px] h-[30px] object-cover rounded-full" />
+                  {comment.foto ? <Image src={comment.foto} alt="" width={100} height={100} className="w-[35px] h-[35px] object-cover rounded-full" /> : <Image src={Pic} alt="" className="w-[35px] h-[35px] object-cover rounded-full" />}
                   <div className="flex flex-col gap-5">
                     <div className="flex gap-2 items-center">
                       <span>{comment.name}</span>
-                      <span>{comment.timeStamp.toDate().toLocaleString()}</span>
                     </div>
                     <p>{comment.comment}</p>
-
-                    <div className="flex justify-between items-center">
-                      <div className="flex  gap-2 items-center">
-                        <SlLike />
-                        <strong>{comment.likes}</strong>
-                      </div>
-                      <span>Reply</span>
+                    <div className="flex gap-2 items-center" onClick={() => handleLike(comment.id)}>
+                      <SlLike />
+                      <strong>{comment.likes.length}</strong>
                     </div>
                   </div>
                 </div>

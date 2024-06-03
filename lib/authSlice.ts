@@ -11,6 +11,7 @@ export interface User {
   lastLoginAt: string;
   apiKey: string;
   appName: string;
+  foto: string;
 }
 
 export interface ProviderDaum {
