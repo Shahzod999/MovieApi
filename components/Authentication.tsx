@@ -31,7 +31,7 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
         return userData.foto;
       }
     }
-    return ""; // Return an empty string if no foto is found
+    return "";
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -94,9 +94,9 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
       await setDoc(doc(db, "users", res.user.uid), {
         name: data.name,
         email: data.email,
-        foto: data.img,
+        foto: data.img || "",
       });
-      dispatch(login({ ...res.user, foto: data.img }));
+      dispatch(login({ ...res.user, foto: data.img || "" }));
       setHidden(false);
     } catch (err) {
       setError(true);
@@ -107,7 +107,6 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
     const value = e.target.value;
-
     setData({ ...data, [id]: value });
   };
 

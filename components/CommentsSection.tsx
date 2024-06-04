@@ -12,6 +12,8 @@ import { logout, selectedUser } from "@/lib/authSlice";
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getDocs, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Timestamp } from "firebase/firestore";
+import { motion } from "framer-motion";
+import Cursor from "./Cursor";
 
 interface Comment {
   id: string;
@@ -24,10 +26,10 @@ interface Comment {
 }
 
 const CommentsSection = () => {
+  const stickyElement = useRef(null);
   const dispatch = useDispatch();
   const user = useSelector(selectedUser);
-  console.log(user,'all user');
-  
+
   const [hidden, setHidden] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -36,8 +38,6 @@ const CommentsSection = () => {
   }); //для закрытия окна при нажатии на вне элемента
 
   const [comments, setComments] = useState<Comment[]>([]);
-  console.log(comments,'coments');
-  
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -85,13 +85,13 @@ const CommentsSection = () => {
 
       if (comment) {
         if (comment.likes.includes(user.uid)) {
-          // User has already liked this comment, so remove their like
+          // Пользователеь уже лайкнул комент можно удалить
           await updateDoc(commentDoc, {
             likes: arrayRemove(user.uid),
           });
           setComments((prevComments) => prevComments.map((comment) => (comment.id === commentId ? { ...comment, likes: comment.likes.filter((uid) => uid !== user.uid) } : comment)));
         } else {
-          // User has not liked this comment yet, so add their like
+          // Пользователеь еще не лайкал комента
           await updateDoc(commentDoc, {
             likes: arrayUnion(user.uid),
           });
@@ -111,23 +111,24 @@ const CommentsSection = () => {
           {user ? (
             <>
               <strong>{user.email}</strong>
-              <div className="flex gap-2 items-center cursor-pointer hover:text-rose-500" onClick={() => dispatch(logout())}>
+              <div className="flex gap-2 items-center cursor-pointer hover:text-rose-500 relative" onClick={() => dispatch(logout())} >
                 <strong>LogOut</strong>
+                <div ref={stickyElement} className="bounds"></div>
                 <TbLogout size="30px" />
               </div>
             </>
           ) : (
-            <div className="flex gap-2 items-center cursor-pointer hover:text-cyan-500" onClick={() => setHidden(!hidden)}>
+            <div className="flex gap-2 items-center cursor-pointer hover:text-cyan-500 mix-blend-difference relative" onClick={() => setHidden(!hidden)} >
               <strong>LogIn</strong>
+              <div ref={stickyElement} className="bounds"></div>
               <HiOutlineUserCircle size="30px" />
             </div>
           )}
         </div>
         <div className="flex flex-col gap-5">
           <div className="flex items-center gap-2">
-            
             {user?.foto ? <Image src={user.foto} alt="" width={100} height={100} className="w-[35px] h-[35px] object-cover rounded-full" /> : <Image src={Pic} alt="" className="w-[35px] h-[35px] object-cover rounded-full" />}
-            
+
             {user ? (
               <div className="w-full">
                 <form onSubmit={commentHandler}>
@@ -147,7 +148,7 @@ const CommentsSection = () => {
                     <span>{comment.name}</span>
                   </div>
                   <p>{comment.comment}</p>
-                  <div className="flex gap-2 items-center" onClick={() => handleLike(comment.id)}>
+                  <div className={`flex gap-2 items-center ${!user && "hover:after:content-['log-in-first']"}`} onClick={() => handleLike(comment.id)}>
                     <SlLike />
                     <strong>{comment.likes.length}</strong>
                     {/* <span>{comment.timeStamp.toDate().toLocaleString()}</span> */}
@@ -159,11 +160,15 @@ const CommentsSection = () => {
         </div>
       </div>
 
-      <div className={`fixed ${hidden ? "grid" : "hidden"} top-0 left-0 right-0 bottom-0 backdrop-blur bg-gradient-to-r from-purple-900/10 via-black/10 to-purple-900/10 z-10  place-items-center`}>
-        <div className="rounded-xl border border-neutral-800 p-10 bg-black/60 shadow-lg backdrop-blur-md" ref={menuRef}>
-          <Authentication setHidden={setHidden} />
+      {hidden && (
+        <div className={"fixed grid top-0 left-0 right-0 bottom-0 backdrop-blur bg-gradient-to-r from-purple-900/10 via-black/10 to-purple-900/10 z-10  place-items-center"}>
+          <div className="rounded-xl border border-neutral-800 p-10 bg-black/60 shadow-lg backdrop-blur-md" ref={menuRef}>
+            <Authentication setHidden={setHidden} />
+          </div>
         </div>
-      </div>
+      )}
+
+      <Cursor stickyElement={stickyElement} />
     </>
   );
 };
