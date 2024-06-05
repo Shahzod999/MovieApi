@@ -14,6 +14,7 @@ import { db } from "@/lib/firebase";
 import { Timestamp } from "firebase/firestore";
 import { motion } from "framer-motion";
 import Cursor from "./Cursor";
+import Framer from "./magnetic/Magnetic";
 
 interface Comment {
   id: string;
@@ -107,22 +108,25 @@ const CommentsSection = () => {
     <>
       <div className="fixed bg-stone-900 rounded-lg p-[20px] flex flex-col gap-5">
         <div className="p-[10px] border-b-[1px] border-gray-500 flex justify-between items-center gap-7">
-          <span>Comments</span>
+          <strong className="cursor-pointer">Comments</strong>
+
           {user ? (
-            <>
+            <Framer>
               <strong>{user.email}</strong>
-              <div className="flex gap-2 items-center cursor-pointer hover:text-rose-500 relative" onClick={() => dispatch(logout())} >
+              <div className="flex gap-2 items-center cursor-pointer hover:text-rose-500 relative" onClick={() => dispatch(logout())}>
                 <strong>LogOut</strong>
                 <div ref={stickyElement} className="bounds"></div>
                 <TbLogout size="30px" />
               </div>
-            </>
+            </Framer>
           ) : (
-            <div className="flex gap-2 items-center cursor-pointer hover:text-cyan-500 mix-blend-difference relative" onClick={() => setHidden(!hidden)} >
-              <strong>LogIn</strong>
-              <div ref={stickyElement} className="bounds"></div>
-              <HiOutlineUserCircle size="30px" />
-            </div>
+            <Framer>
+              <div className="flex  gap-2 items-center cursor-pointer hover:text-cyan-500 mix-blend-difference relative" onClick={() => setHidden(!hidden)}>
+                <strong>LogIn</strong>
+                <div ref={stickyElement} className="bounds"></div>
+                <HiOutlineUserCircle size="30px" />
+              </div>
+            </Framer>
           )}
         </div>
         <div className="flex flex-col gap-5">
