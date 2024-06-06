@@ -13,17 +13,22 @@ export const metadata: Metadata = {
   description: "Your favorite movies, all in one place.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body className={`flex justify-center max-w-screen-2xl  bg-[#0F1117] ${dmSans.className}`}>
+      <body
+        className={`flex justify-center max-w-screen-2xl  bg-[#0F1117] ${dmSans.className}`}>
         <StoreProvider>
-          <div className="">
+          <div className="flex-[3] w-full max-w-screen-2xl">
             <Header />
             {children}
             <Footer />
           </div>
-          <aside className="p-[15px]">
+          <aside className="p-[15px] flex-1">
             <CommentsSection />
           </aside>
         </StoreProvider>

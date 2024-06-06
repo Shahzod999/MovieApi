@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { animate, motion, transform, useMotionValue, useSpring } from "framer-motion";
+import {
+  animate,
+  motion,
+  transform,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
 
 const Cursor = ({ stickyElement }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -28,7 +34,8 @@ const Cursor = ({ stickyElement }) => {
 
   const ManageMouseMove = (e) => {
     const { clientX, clientY } = e;
-    const { left, top, width, height } = stickyElement.current.getBoundingClientRect();
+    const { left, top, width, height } =
+      stickyElement.current.getBoundingClientRect();
 
     const center = { x: left + width / 2, y: top + height / 2 };
     const distance = { x: clientX - center.x, y: clientY - center.y };
@@ -58,7 +65,12 @@ const Cursor = ({ stickyElement }) => {
 
   const manageMouseLeave = () => {
     setIsHovered(false);
-    animate(cursorRef.current, { scaleX: 1, scaleY: 1 }, { duration: 0.1 }, { type: "spring" });
+    animate(
+      cursorRef.current,
+      { scaleX: 1, scaleY: 1 },
+      { duration: 0.1 },
+      { type: "spring" },
+    );
   };
 
   useEffect(() => {
@@ -76,7 +88,19 @@ const Cursor = ({ stickyElement }) => {
     return `rotate(${rotate}) scaleX(${scaleX}) scaleY(${scaleY})`;
   };
 
-  return <motion.div className="cursor" ref={cursorRef} transformTemplate={template} style={{ left: smoothMouse.x, scaleX: scale.x, scaleY: scale.y, top: smoothMouse.y }} animate={{ width: cursorSize, height: cursorSize }}></motion.div>;
+  return (
+    <motion.div
+      className="cursor"
+      ref={cursorRef}
+      transformTemplate={template}
+      style={{
+        left: smoothMouse.x,
+        scaleX: scale.x,
+        scaleY: scale.y,
+        top: smoothMouse.y,
+      }}
+      animate={{ width: cursorSize, height: cursorSize }}></motion.div>
+  );
 };
 
 export default Cursor;
