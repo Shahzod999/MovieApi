@@ -48,6 +48,7 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
         console.log(error);
       });
   };
+
   //
 
   useEffect(() => {
@@ -127,7 +128,6 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
         type="email"
         placeholder="Email"
         id="email"
-        // value={email}
         onChange={handleInput}
         className="h-12 w-72 rounded-xl px-8 border border-neon-blue-bg bg-black text-white placeholder-neon-blue-bg focus:outline-none focus:ring-2 focus:ring-neon-blue-bg"
         required
@@ -136,7 +136,6 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
         type="password"
         placeholder="Password"
         id="password"
-        // value={password}
         onChange={handleInput}
         className="h-12 w-72 rounded-xl px-8 border border-neon-blue bg-black text-white placeholder-neon-blue focus:outline-none focus:ring-2 focus:ring-neon-blue"
         required

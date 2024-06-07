@@ -13,15 +13,18 @@ function CommentsToggle() {
 
   return (
     <>
-      <div className="relative">
+      <div className="relative smallDisplayNone">
         <Framer>
-          <FaComments size={40} onClick={toggleComments} className="md:hidden absolute top-[50px] right-[50px]" />
+          <FaComments size={40} onClick={toggleComments} className="absolute top-[50px] right-[50px]" />
         </Framer>
       </div>
-      <aside className={`fixed grid place-items-center w-full h-full backdrop-blur rounded-b-[25px] overflow-hidden duration-1000 transition-transform transform ${isVisible ? "translate-y-0" : "-translate-y-full"} md:hidden`}>
-        <div className={`fixed w-[100%] h-[100%]  ${isVisible ? "block" : "hidden"}`} onClick={toggleComments}></div>
+      <aside className={`smallDisplay ${isVisible ? "translate-y-0" : "-translate-y-full"} `}>
+        <div className={`fixed w-[100%] h-[100%] smallDisplayNone ${isVisible ? "block" : "hidden"}`} onClick={toggleComments}></div>
         <CommentsSection />
       </aside>
+      {/* <aside className="p-[15px] flex-1 hidden md:block">
+        <CommentsSection />
+      </aside> */}
     </>
   );
 }
