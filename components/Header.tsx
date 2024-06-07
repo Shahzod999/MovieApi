@@ -19,6 +19,7 @@ function Header() {
             Plunge Into The <span className="red-gradient">World</span> Of Cinema
           </motion.h1>
         </Link>
+        <span className="text-zinc-700">FireBase/Next/Toolkit/Tailwind</span>
       </div>
     </header>
   );

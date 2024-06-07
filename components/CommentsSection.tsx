@@ -7,22 +7,11 @@ import { HiOutlineUserCircle } from "react-icons/hi";
 import { FcLike } from "react-icons/fc";
 import { TbLogout } from "react-icons/tb";
 import Authentication from "./Authentication";
-import { useClickOutSide } from "@/hooks/useClickOutside";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, selectedUser } from "@/lib/authSlice";
-import {
-  addDoc,
-  arrayRemove,
-  arrayUnion,
-  collection,
-  doc,
-  getDocs,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, doc, getDocs, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Timestamp } from "firebase/firestore";
-import { motion } from "framer-motion";
 import Cursor from "./Cursor";
 import Framer from "./magnetic/Magnetic";
 
@@ -42,11 +31,10 @@ const CommentsSection = () => {
   const user = useSelector(selectedUser);
 
   const [hidden, setHidden] = useState<boolean>(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
-  useClickOutSide(menuRef, () => {
-    setHidden(false);
-  }); //для закрытия окна при нажатии на вне элемента
+  const toggleComments = () => {
+    setHidden(!hidden);
+  };
 
   const [comments, setComments] = useState<Comment[]>([]);
 
@@ -110,21 +98,15 @@ const CommentsSection = () => {
                     ...comment,
                     likes: comment.likes.filter((uid) => uid !== user.uid),
                   }
-                : comment,
-            ),
+                : comment
+            )
           );
         } else {
           // Пользователеь еще не лайкал комента
           await updateDoc(commentDoc, {
             likes: arrayUnion(user.uid),
           });
-          setComments((prevComments) =>
-            prevComments.map((comment) =>
-              comment.id === commentId
-                ? { ...comment, likes: [...comment.likes, user.uid] }
-                : comment,
-            ),
-          );
+          setComments((prevComments) => prevComments.map((comment) => (comment.id === commentId ? { ...comment, likes: [...comment.likes, user.uid] } : comment)));
         }
       }
     } catch (error) {
@@ -142,9 +124,7 @@ const CommentsSection = () => {
             <div className="cursorTextHeader flex flex-wrap flex-1 justify-between cursorMixBlendMode">
               <strong>{user.email}</strong>
               <Framer>
-                <div
-                  className="flex gap-2 items-center cursor-pointer hover:text-rose-500 relative"
-                  onClick={() => dispatch(logout())}>
+                <div className="flex gap-2 items-center cursor-pointer hover:text-rose-500 relative" onClick={() => dispatch(logout())}>
                   <strong className="CursorTextLogMenu">
                     LogOut
                     <div ref={stickyElement} className="bounds"></div>
@@ -156,9 +136,7 @@ const CommentsSection = () => {
           ) : (
             <div className="cursorTextHeader cursorMixBlendMode">
               <Framer>
-                <div
-                  className="flex gap-2 items-center cursor-pointer hover:text-cyan-500"
-                  onClick={() => setHidden(!hidden)}>
+                <div className="flex gap-2 items-center cursor-pointer hover:text-cyan-500" onClick={toggleComments}>
                   <strong className="CursorTextLogMenu">
                     Log-In
                     <div ref={stickyElement} className="bounds"></div>
@@ -173,32 +151,12 @@ const CommentsSection = () => {
 
         <div className="flex flex-col gap-5">
           <div className="flex flex-col justify-center items-center gap-2">
-            {user?.foto ? (
-              <Image
-                src={user.foto}
-                alt=""
-                width={150}
-                height={150}
-                className="w-[55px] h-[55px] object-cover rounded-full"
-              />
-            ) : (
-              <Image
-                src={Pic}
-                alt=""
-                className="w-[35px] h-[35px] object-cover rounded-full"
-              />
-            )}
+            {user?.foto ? <Image src={user.foto} alt="" width={150} height={150} className="w-[55px] h-[55px] object-cover rounded-full" /> : <Image src={Pic} alt="" className="w-[35px] h-[35px] object-cover rounded-full" />}
 
             {user ? (
               <div className="w-full">
                 <form onSubmit={commentHandler}>
-                  <input
-                    name="commentInput"
-                    type="text"
-                    placeholder="Add comment..."
-                    className="p-[8px] rounded-lg w-full h-full"
-                    required
-                  />
+                  <input name="commentInput" type="text" placeholder="Add comment..." className="p-[8px] rounded-lg w-full h-full" required />
                 </form>
               </div>
             ) : (
@@ -211,31 +169,13 @@ const CommentsSection = () => {
               const LikeIcon = isLiked ? FcLike : SlLike;
               return (
                 <div className="flex gap-2 mb-10" key={comment.id}>
-                  {comment.foto ? (
-                    <Image
-                      src={comment.foto}
-                      alt=""
-                      width={100}
-                      height={100}
-                      className="w-[35px] h-[35px] object-cover rounded-full"
-                    />
-                  ) : (
-                    <Image
-                      src={Pic}
-                      alt=""
-                      className="w-[35px] h-[35px] object-cover rounded-full"
-                    />
-                  )}
+                  {comment.foto ? <Image src={comment.foto} alt="" width={100} height={100} className="w-[35px] h-[35px] object-cover rounded-full" /> : <Image src={Pic} alt="" className="w-[35px] h-[35px] object-cover rounded-full" />}
                   <div className="flex flex-col gap-5">
                     <div className="flex gap-2 items-center">
                       <span>{comment.name}</span>
                     </div>
                     <p>{comment.comment}</p>
-                    <div
-                      className={`flex cursorMixBlendMode gap-2 items-center ${
-                        !user && "hover:after:content-['log-in-first']"
-                      }`}
-                      onClick={() => handleLike(comment.id)}>
+                    <div className={`flex cursorMixBlendMode gap-2 items-center ${!user && "hover:after:content-['log-in-first']"}`} onClick={() => handleLike(comment.id)}>
                       <LikeIcon />
                       <strong>{comment.likes.length}</strong>
                       {/* <span>{comment.timeStamp.toDate().toLocaleString()}</span> */}
@@ -248,20 +188,17 @@ const CommentsSection = () => {
         </div>
       </div>
 
-      {hidden && (
-        <div
-          className={
-            "fixed grid top-0 left-0 right-0 bottom-0 backdrop-blur bg-gradient-to-r from-purple-900/10 via-black/10 to-purple-900/10 z-10  place-items-center"
-          }>
-          <div
-            className="rounded-xl border border-neutral-800 p-10 bg-black/60 shadow-lg backdrop-blur-md"
-            ref={menuRef}>
-            <Authentication setHidden={setHidden} />
-          </div>
+      <div className={`fixed backdrop-blur top-0 left-0 right-0 bottom-0 grid place-items-center w-full h-full rounded-b-[25px] overflow-hidden transition-transform transform ${hidden ? "translate-y-0" : "-translate-y-full"}`}>
+        <div className={`fixed w-[100%] h-[100%]  ${hidden ? "block" : "hidden"}`} onClick={toggleComments}></div>
+        <div className="rounded-xl border border-neutral-800 p-10 bg-black/60 shadow-lg backdrop-blur-md">
+          <Authentication setHidden={setHidden} />
         </div>
-      )}
+      </div>
     </>
   );
 };
 
 export default CommentsSection;
+
+// backdrop-blur bg-gradient-to-r from-purple-900/10 via-black/10 to-purple-900/10
+// bg-authBack bg-center bg-no-repeat bg-cover
