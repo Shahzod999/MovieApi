@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface User {
   uid: string;
@@ -17,10 +17,10 @@ export interface User {
 export interface ProviderDaum {
   providerId: string;
   uid: string;
-  displayName: any;
+  displayName: string | null;
   email: string;
-  phoneNumber: any;
-  photoURL: any;
+  phoneNumber: string | null;
+  photoURL: string | null;
 }
 
 export interface StsTokenManager {
@@ -33,23 +33,27 @@ interface AuthState {
   user: User | null;
 }
 
-// const getUserFromLocalStorage = (): User | null => {
-//   const userData = localStorage.getItem("user");
-//   return userData ? JSON.parse(userData) : null;
-// };
-// //...
-// const initialState: AuthState = {
-//   user: getUserFromLocalStorage(), //...
-// };
+const loadUserFromLocalStorage = (): User | null => {
+  const userData = localStorage.getItem("user");
+  if (userData) {
+    try {
+      return JSON.parse(userData);
+    } catch (error) {
+      console.error("Failed to parse user data from localStorage", error);
+      return null;
+    }
+  }
+  return null;
+};
 
 const initialState: AuthState = {
-  user: JSON.parse(localStorage.getItem("user") as string) || null,
+  user: loadUserFromLocalStorage(),
 };
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state, action) => {
+    login: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
       localStorage.setItem("user", JSON.stringify(action.payload));
     },

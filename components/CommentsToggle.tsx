@@ -18,7 +18,7 @@ function CommentsToggle() {
           <FaComments size={40} onClick={toggleComments} className="md:hidden absolute top-[50px] right-[50px]" />
         </Framer>
       </div>
-      <aside className={`fixed grid place-items-center w-full h-full backdrop-blur rounded-b-[25px] overflow-hidden transition-transform transform ${isVisible ? "translate-y-0" : "-translate-y-full"} md:hidden`}>
+      <aside className={`fixed grid place-items-center w-full h-full backdrop-blur rounded-b-[25px] overflow-hidden duration-1000 transition-transform transform ${isVisible ? "translate-y-0" : "-translate-y-full"} md:hidden`}>
         <div className={`fixed w-[100%] h-[100%]  ${isVisible ? "block" : "hidden"}`} onClick={toggleComments}></div>
         <CommentsSection />
       </aside>

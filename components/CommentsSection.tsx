@@ -188,7 +188,7 @@ const CommentsSection = () => {
         </div>
       </div>
 
-      <div className={`fixed backdrop-blur top-0 left-0 right-0 bottom-0 grid place-items-center w-full h-full rounded-b-[25px] overflow-hidden transition-transform transform ${hidden ? "translate-y-0" : "-translate-y-full"}`}>
+      <div className={`fixed backdrop-blur top-0 left-0 right-0 bottom-0 grid place-items-center w-full h-full rounded-b-[25px] overflow-hidden transition-transform duration-1000 transform ${hidden ? "translate-y-0" : "-translate-y-full"}`}>
         <div className={`fixed w-[100%] h-[100%]  ${hidden ? "block" : "hidden"}`} onClick={toggleComments}></div>
         <div className="rounded-xl border border-neutral-800 p-10 bg-black/60 shadow-lg backdrop-blur-md">
           <Authentication setHidden={setHidden} />
