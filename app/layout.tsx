@@ -25,10 +25,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
           </div>
           <CommentsToggle />
-
-          {/* <aside className="p-[15px] flex-1 hidden md:block">
-            <CommentsSection />
-          </aside> */}
         </StoreProvider>
       </body>
     </html>

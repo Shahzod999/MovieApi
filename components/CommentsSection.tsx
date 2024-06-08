@@ -17,7 +17,7 @@ import Framer from "./magnetic/Magnetic";
 
 interface Comment {
   id: string;
-  timeStamp: Timestamp; // Change type to Timestamp
+  timeStamp: Timestamp;
   comment: string;
   likes: string[];
   foto: string;
@@ -199,6 +199,3 @@ const CommentsSection = () => {
 };
 
 export default CommentsSection;
-
-// backdrop-blur bg-gradient-to-r from-purple-900/10 via-black/10 to-purple-900/10
-// bg-authBack bg-center bg-no-repeat bg-cover

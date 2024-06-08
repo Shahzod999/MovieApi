@@ -120,7 +120,14 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
           </label>
           {percent > 0 && percent + "%"}
           <input type="file" id="image" className="hidden" onChange={(e) => e.target.files && setFile(e.target.files[0])} />
-          <input type="text" id="name" placeholder="Name" className="h-12 w-72 rounded-xl px-8 border border-neon-blue bg-black text-white placeholder-neon-blue focus:outline-none focus:ring-2 focus:ring-neon-blue" required onChange={handleInput} />
+          <input
+            type="text"
+            id="name"
+            placeholder="Name"
+            className="h-12 w-full rounded-xl px-8 border border-neon-blue bg-black text-white placeholder-neon-blue focus:outline-none focus:ring-2 focus:ring-neon-blue"
+            required
+            onChange={handleInput}
+          />
         </>
       )}
 
@@ -129,7 +136,7 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
         placeholder="Email"
         id="email"
         onChange={handleInput}
-        className="h-12 w-72 rounded-xl px-8 border border-neon-blue-bg bg-black text-white placeholder-neon-blue-bg focus:outline-none focus:ring-2 focus:ring-neon-blue-bg"
+        className="h-12 w-full rounded-xl px-8 border border-neon-blue-bg bg-black text-white placeholder-neon-blue-bg focus:outline-none focus:ring-2 focus:ring-neon-blue-bg"
         required
       />
       <input
@@ -137,15 +144,15 @@ const Authentication: React.FC<AuthProps> = ({ setHidden }) => {
         placeholder="Password"
         id="password"
         onChange={handleInput}
-        className="h-12 w-72 rounded-xl px-8 border border-neon-blue bg-black text-white placeholder-neon-blue focus:outline-none focus:ring-2 focus:ring-neon-blue"
+        className="h-12 w-full rounded-xl px-8 border border-neon-blue bg-black text-white placeholder-neon-blue focus:outline-none focus:ring-2 focus:ring-neon-blue"
         required
       />
-      <button type="submit" disabled={percent !== 0 && percent < 100} className="h-12 w-72 rounded-xl bg-cyan-500 text-white font-semibold hover:bg-neon-blue-light active:bg-neon-blue-dark transition duration-300 shadow-neon-blue-bg-glow">
+      <button type="submit" disabled={percent !== 0 && percent < 100} className="h-12 w-full rounded-xl bg-cyan-500 text-white font-semibold hover:bg-neon-blue-light active:bg-neon-blue-dark transition duration-300 shadow-neon-blue-bg-glow">
         {register ? "Register" : "Sign In"}
       </button>
       {error && <span className="text-rose-500">Wrong Email or Password</span>}
       <span className="text-white">or</span>
-      <button type="button" className="h-12 w-72 rounded-xl bg-neon-blue text-white font-semibold hover:bg-neon-blue-light active:bg-neon-blue-dark transition duration-300 shadow-neon-blue-glow" onClick={() => setRegister(!register)}>
+      <button type="button" className="h-12 w-full rounded-xl bg-neon-blue text-white font-semibold hover:bg-neon-blue-light active:bg-neon-blue-dark transition duration-300 shadow-neon-blue-glow" onClick={() => setRegister(!register)}>
         {register ? "Are u reddy to login?" : "Do u wanna register?"}
       </button>
     </form>

@@ -33,10 +33,11 @@ async function CurrentMovie({ params }: CurrentMovieProps) {
         <Link href="/">Home / </Link>
         <Link href="#">{currentMovie.Title}</Link>
       </h2>
-      <section className="grid gap-20 grid-cols-3 items-center">
-        <MovieCard movie={currentMovie} index={1} />
-
-        <div className="col-span-2">
+      <section className="flex flex-wrap gap-20 items-center justify-center">
+        <div className="inline-block w-[300px]">
+          <MovieCard movie={currentMovie} index={1} />
+        </div>
+        <div className="basis-[350px] grow">
           {/* Object.entries для преобразования объекта currentMovie в массив пар [ключ, значение], который затем используется в map для генерации JSX: */}
           {Object.entries(currentMovie).map(([key, value], index) => {
             // проверяем, является ли value массивом.  например у нас Rating отдельный массив
