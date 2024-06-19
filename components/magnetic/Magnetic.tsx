@@ -1,11 +1,17 @@
-import { useRef, useState } from "react";
+import { useRef, useState, ReactNode } from "react";
 import { motion } from "framer-motion";
 
-export default function Framer({ children }) {
-  const ref = useRef(null);
+interface FramerProps {
+  children: ReactNode;
+}
+
+export default function Framer({ children }: FramerProps) {
+  const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const handleMouse = (e) => {
+  const handleMouse = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (!ref.current) return;
+
     const { clientX, clientY } = e;
     const { height, width, left, top } = ref.current.getBoundingClientRect();
     const middleX = clientX - (left + width / 2);
