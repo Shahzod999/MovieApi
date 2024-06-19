@@ -6,6 +6,9 @@ interface AuthState {
 }
 
 const loadUserFromLocalStorage = (): User | null => {
+  if (typeof window === "undefined") {
+    return null; // Return null if running on the server
+  }
   const userData = localStorage.getItem("user");
   if (userData) {
     try {
